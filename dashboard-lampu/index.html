@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <!-- Supaya tampilan pas di layar HP -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard Lampu Kandang Ayam Petelur</title>
+
+  <!-- Menghubungkan ke berkas tampilan (CSS) -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ===== 1. JUDUL DAN STATUS KONEKSI ===== -->
+  <header>
+    <div>
+      <h1>Kontrol Lampu Kandang</h1>
+      <p class="sub">Kandang ayam petelur · Prototipe miniatur</p>
+    </div>
+    <!-- Lencana online/offline ESP32. Isinya diubah oleh script.js -->
+    <span class="badge" id="badge">
+      <span class="dot"></span>
+      <span id="badgeText">ESP32 online</span>
+    </span>
+  </header>
+
+  <!-- Catatan demo. HAPUS baris ini setelah dashboard terhubung ke server -->
+  <p class="notice">Tampilan statis: data masih contoh dan belum terhubung ke server.</p>
+
+  <!-- ===== 2. TIGA KARTU RINGKASAN ===== -->
+  <section class="grid stats" aria-label="Ringkasan status">
+    <div class="card">
+      <p class="label">Status lampu</p>
+      <p class="value">
+        <span class="lamp-dot" id="lampDot"></span>
+        <span id="statusText">Menyala</span>
+      </p>
+    </div>
+
+    <div class="card">
+      <p class="label">Mode aktif</p>
+      <p class="value" id="modeAktif">Otomatis</p>
+    </div>
+
+    <div class="card">
+      <p class="label">Tanggal dan jam (RTC)</p>
+      <p class="value">
+        <span id="jam">--:--:--</span>
+        <small id="tanggal">memuat...</small>
+      </p>
+    </div>
+  </section>
+
+  <!-- ===== 3. PILIHAN MODE ===== -->
+  <section class="card" aria-labelledby="modeLabel" style="margin-bottom:12px">
+    <p class="label" id="modeLabel">Mode kontrol</p>
+    <div class="seg" role="group" aria-label="Pilih mode kontrol">
+      <button type="button" id="btnAuto" aria-pressed="true">Otomatis</button>
+      <button type="button" id="btnManual" aria-pressed="false">Manual</button>
+    </div>
+    <p class="hint" id="modeHint">Lampu mengikuti jadwal ON/OFF di bawah.</p>
+  </section>
+
+  <!-- ===== 4. DUA PANEL: JADWAL OTOMATIS DAN KONTROL MANUAL ===== -->
+  <div class="grid panels">
+
+    <!-- Panel jadwal otomatis -->
+    <section class="card" id="panelAuto" aria-labelledby="hAuto">
+      <h2 id="hAuto">Jadwal otomatis</h2>
+
+      <div class="field">
+        <label for="profil">Profil jadwal</label>
+        <select id="profil">
+          <option value="kustom">Kustom</option>
+          <option value="layer">Fase Layer (contoh)</option>
+        </select>
+      </div>
+
+      <p class="label">Sesi pagi</p>
+      <div class="row">
+        <label for="onPagi">ON</label>
+        <input type="time" id="onPagi" value="04:00">
+        <label for="offPagi">OFF</label>
+        <input type="time" id="offPagi" value="06:00">
+      </div>
+
+      <p class="label">Sesi sore</p>
+      <div class="row">
+        <label for="onSore">ON</label>
+        <input type="time" id="onSore" value="18:00">
+        <label for="offSore">OFF</label>
+        <input type="time" id="offSore" value="20:00">
+      </div>
+
+      <!-- Total jam lampu menyala, dihitung oleh script.js -->
+      <p class="total" id="total"></p>
+
+      <button type="button" class="btn" id="btnSimpan">Simpan jadwal</button>
+      <p class="hint">Berlaku setiap hari.</p>
+    </section>
+
+    <!-- Panel kontrol manual (kelas "dim" dan atribut "inert" = nonaktif saat mode Otomatis) -->
+    <section class="card dim" id="panelManual" aria-labelledby="hManual" inert>
+      <h2 id="hManual">Kontrol manual</h2>
+      <button type="button" class="btn big" id="btnLampu">Matikan lampu</button>
+      <p class="hint" id="catatanManual">
+        Aktif hanya saat mode Manual. Perintah dikirim ke ESP32 dan statusnya dikonfirmasi kembali.
+      </p>
+    </section>
+
+  </div>
+
+  <!-- ===== 5. RIWAYAT AKTIVITAS ===== -->
+  <section class="card" aria-labelledby="hRiwayat">
+    <h2 id="hRiwayat">Riwayat aktivitas</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Tanggal</th>
+            <th>Jam</th>
+            <th>Sumber</th>
+            <th>Aksi</th>
+            <th>Konfirmasi</th>
+          </tr>
+        </thead>
+        <!-- Barisnya diisi oleh script.js -->
+        <tbody id="riwayat"></tbody>
+      </table>
+    </div>
+  </section>
+
+</div>
+
+<!-- Pesan singkat yang muncul di bawah layar (misalnya "Jadwal disimpan") -->
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<!-- Menghubungkan ke berkas perilaku (JavaScript). Harus di paling bawah -->
+<script src="script.js"></script>
+</body>
+</html>
